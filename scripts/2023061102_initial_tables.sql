@@ -9,16 +9,3 @@ CREATE TABLE scores (
   ),
   PRIMARY KEY (id)
 );
-
-CREATE TRIGGER bi_scores BEFORE
-INSERT
-  ON scores FOR EACH ROW
-SET
-  NEW.id = UUID_TO_BIN(UUID(), FALSE);
-
-CREATE TRIGGER ai_scores
-AFTER
-INSERT
-  ON scores FOR EACH ROW
-SET
-  @score_uuid = BIN_TO_UUID(NEW.id, FALSE);

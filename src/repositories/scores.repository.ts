@@ -8,21 +8,23 @@ const SCORE_UUID = '@score_uuid';
 
 const create = async (score: Score) => {
   const sql =
-    'INSERT INTO scores (name, country, score) VALUES (?, ?, ?); SELECT @score_uuid;';
+    'INSERT INTO scores (id, name, country, score) VALUES (UUID_TO_BIN(?), ?, ?, ?);';
   const conn = getPool(true);
-  const [[_, response]] = await conn.query<Array<RowDataPacket>>(sql, [
+  const [response] = await conn.query<ResultSetHeader>(sql, [
+    score.id,
     score.name,
     score.country,
     score.score,
   ]);
-  if (response[SCORE_UUID]) {
-    return { ...score, id: response[SCORE_UUID] };
+  if (response.affectedRows) {
+    return { ...score };
   }
   return null;
 };
 
 const update = async (score: Score) => {
-  const sql = 'UPDATE scores SET name = ?, country = ?, score = ? WHERE id = ?';
+  const sql =
+    'UPDATE scores SET name = ?, country = ?, score = ? WHERE id = UUID_TO_BIN(?)';
   const conn = getPool();
   const [response] = await conn.query<ResultSetHeader>(sql, [
     score.name,
@@ -47,7 +49,8 @@ const read = async (id: string) => {
 const readAll = async ({ filter, page, pageSize }: FilterRequestParams) => {
   const hasPagination = Number.isInteger(pageSize) && Number.isInteger(page);
   const countSelect = 'SELECT COUNT(*) as totalElements FROM scores';
-  const select = 'SELECT * FROM scores';
+  const select =
+    'SELECT *, BIN_TO_UUID(id) as id FROM scores ORDER BY score DESC';
   const where = filter ? ' WHERE queryable like ?' : '';
   const pagination = hasPagination ? ' LIMIT ? OFFSET ?' : '';
 
@@ -78,9 +81,8 @@ const readAll = async ({ filter, page, pageSize }: FilterRequestParams) => {
 };
 
 const remove = async (id: string) => {
-  const sql = 'DELETE FROM scores WHERE id = ?';
+  const sql = 'DELETE FROM scores WHERE id = UUID_TO_BIN(?)';
   const conn = getPool();
-
   await conn.query(sql, [id]);
 };
 

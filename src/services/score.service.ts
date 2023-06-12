@@ -3,16 +3,20 @@ import { PostScoreRequestBody, GetScoreResponseBody } from '../models/http';
 import scoresRepository from '../repositories/scores.repository';
 import countryService from './country.service';
 
-type ScoresService = Service<PostScoreRequestBody, GetScoreResponseBody>;
-
-const create = async (score: PostScoreRequestBody) => {
-  const { country } = await countryService.getCountry(score.ip);
-  return await scoresRepository.create({ ...score, id: null, country });
+type ScoresService = Omit<
+  Service<PostScoreRequestBody, GetScoreResponseBody>,
+  'create' | 'update'
+> & {
+  upsert: (dto: PostScoreRequestBody) => Promise<GetScoreResponseBody>;
 };
 
-const update = async (id: string, score: PostScoreRequestBody) => {
+const upsert = async (score: PostScoreRequestBody) => {
   const { country } = await countryService.getCountry(score.ip);
-  return await scoresRepository.update({ ...score, id, country });
+  const existingScore = await scoresRepository.read(score.id);
+  const operation = existingScore
+    ? scoresRepository.update
+    : scoresRepository.create;
+  return await operation({ ...score, country });
 };
 
 const read = async (id: string) => {
@@ -28,9 +32,8 @@ const remove = async (id: string) => {
 };
 
 export default {
-  create,
+  upsert,
   read,
   readAll,
-  update,
   remove,
 } as ScoresService;

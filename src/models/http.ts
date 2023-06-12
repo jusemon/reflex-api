@@ -21,6 +21,7 @@ export type ScoreResponse = {
 export type GetScoreResponseBody = ScoreResponse | Response<ScoreResponse>;
 
 export type PostScoreRequestBody = {
+  id: string;
   ip: string;
   name: string;
   score: number;
