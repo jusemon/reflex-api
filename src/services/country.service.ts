@@ -6,7 +6,11 @@ export const getCountry = async (ip: string) => {
   const response = await client.get<CountryResponse>(
     config.externalServices.countryService + ip,
   );
-  return { ...response, country: response.country.toLowerCase() };
+  return {
+    ...response,
+    country:
+      config.env === 'development' ? 'co' : response.country.toLowerCase(),
+  };
 };
 
 export default {

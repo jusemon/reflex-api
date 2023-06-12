@@ -2,6 +2,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { FilterRequestParams, Repository, Response } from '../models/common';
 import { Score } from '../models/database';
 import { getPool } from './db';
+import { AppError } from '../middlewares/error.middleware';
 
 type ScoresRepository = Repository<Score>;
 const SCORE_UUID = '@score_uuid';
@@ -39,9 +40,13 @@ const update = async (score: Score) => {
 };
 
 const read = async (id: string) => {
-  const sql = 'SELECT * FROM scores WHERE id = ?';
+  const sql =
+    'SELECT *, BIN_TO_UUID(id) as id FROM scores WHERE id = UUID_TO_BIN(?)';
   const conn = getPool();
   const [response] = await conn.query<Array<RowDataPacket>>(sql, [id]);
+  if (response.length === 0) {
+    throw new AppError(404, 'Score not found');
+  }
   const [{ queryable: _, ...result }] = response;
   return result;
 };

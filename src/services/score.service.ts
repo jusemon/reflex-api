@@ -1,3 +1,4 @@
+import { AppError } from '../middlewares/error.middleware';
 import { FilterRequestParams, Service } from '../models/common';
 import { PostScoreRequestBody, GetScoreResponseBody } from '../models/http';
 import scoresRepository from '../repositories/scores.repository';
@@ -12,7 +13,12 @@ type ScoresService = Omit<
 
 const upsert = async (score: PostScoreRequestBody) => {
   const { country } = await countryService.getCountry(score.ip);
-  const existingScore = await scoresRepository.read(score.id);
+  const existingScore = await scoresRepository.read(score.id).catch((error) => {
+    const appError = error as AppError;
+    if (appError.status !== 404 || !appError.status) {
+      throw error;
+    }
+  });
   const operation = existingScore
     ? scoresRepository.update
     : scoresRepository.create;
