@@ -3,7 +3,7 @@ import config from '../config';
 const { database } = config;
 let globalPool: Pool | undefined = undefined;
 
-export const getPool = () => {
+export const getPool = (multipleStatements: boolean = false) => {
   if (globalPool) {
     return globalPool;
   }
@@ -15,6 +15,7 @@ export const getPool = () => {
     password: database.password,
     port: database.port,
     timezone: 'Z',
+    multipleStatements,
     typeCast: function castField(field, defaultTypeCasting) {
       if (field.type === 'BIT' && field.length === 1) {
         const bytes = field.buffer();

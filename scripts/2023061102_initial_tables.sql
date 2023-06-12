@@ -21,4 +21,4 @@ AFTER
 INSERT
   ON scores FOR EACH ROW
 SET
-  @score_uuid = NEW.id;
+  @score_uuid = BIN_TO_UUID(NEW.id, FALSE);

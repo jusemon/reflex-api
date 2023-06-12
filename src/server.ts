@@ -11,6 +11,7 @@ const { server } = config;
 
 export const initializeServer = () => {
   const app = new Koa();
+  app.proxy = true;
 
   // Middlewares
   app.use(json());

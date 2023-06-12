@@ -1,22 +1,22 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { FilterRequestParams, Repository, Response } from '../models/common';
 import { Score } from '../models/database';
-
 import { getPool } from './db';
 
 type ScoresRepository = Repository<Score>;
+const SCORE_UUID = '@score_uuid';
 
 const create = async (score: Score) => {
   const sql =
-    'INSERT INTO scores (name, country, score) VALUES (?, ?, ?); SELECT @score_uuid';
-  const conn = getPool();
-  const [response] = await conn.query<ResultSetHeader>(sql, [
+    'INSERT INTO scores (name, country, score) VALUES (?, ?, ?); SELECT @score_uuid;';
+  const conn = getPool(true);
+  const [[_, response]] = await conn.query<Array<RowDataPacket>>(sql, [
     score.name,
     score.country,
     score.score,
   ]);
-  if (response.affectedRows) {
-    return { ...score };
+  if (response[SCORE_UUID]) {
+    return { ...score, id: response[SCORE_UUID] };
   }
   return null;
 };
