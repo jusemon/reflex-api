@@ -7,6 +7,7 @@ export type DatabaseConfig = {
 };
 
 export type ServerConfig = {
+  host: string;
   port: number;
   apiVersion: number;
 };

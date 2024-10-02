@@ -3,6 +3,7 @@ import { ServerConfig } from '../../models/config';
 
 const envSchema = joi
   .object({
+    HOST: joi.string().default('localhost'),
     PORT: joi.number().default(3000),
     API_VERSION: joi.number().default(1),
   })
@@ -15,6 +16,7 @@ if (error) {
 }
 
 export const server: ServerConfig = {
+  host: envVars.HOST,
   port: envVars.PORT,
   apiVersion: envVars.API_VERSION,
 };
