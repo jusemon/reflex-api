@@ -33,17 +33,17 @@ published
 With docker run (replace ${ENV_VARIABLE} with your values):
 
 ```sh
-docker run -p ${PORT}:${PORT} -e NODE_ENV=${NODE_ENV} -e HOST=${HOST} -e PORT=${PORT} -e API_VERSION=${API_VERSION} -e ALLOWED_ORIGINS=${ALLOWED_ORIGINS} -e DB_HOST=${DB_HOST} -e DB_DATABASE=${DB_DATABASE} -e DB_USER=${DB_USER} -e DB_PASSWORD=${DB_PASSWORD} -e DB_PORT=${DB_PORT} -e COUNTRY_SERVICE=${COUNTRY_SERVICE} git.jusemon.com/jusemon/botkeeping-api:1.0.0
+docker run -p ${PORT}:${PORT} -e NODE_ENV=${NODE_ENV} -e HOST=${HOST} -e PORT=${PORT} -e API_VERSION=${API_VERSION} -e ALLOWED_ORIGINS=${ALLOWED_ORIGINS} -e DB_HOST=${DB_HOST} -e DB_DATABASE=${DB_DATABASE} -e DB_USER=${DB_USER} -e DB_PASSWORD=${DB_PASSWORD} -e DB_PORT=${DB_PORT} -e COUNTRY_SERVICE=${COUNTRY_SERVICE} git.jusemon.com/jusemon/reflex-api:1.0.0
 ```
 
 With docker compose (the ${ENV_VARIABLE} will be taken from the .env
 automatically):
 
 ```yaml
-name: botkeeping
+name: reflex
 services:
   api:
-    image: git.jusemon.com/jusemon/botkeeping-api:1.0.0
+    image: git.jusemon.com/jusemon/reflex-api:1.0.0
     ports:
       - ${PORT}:${PORT}
     environment:
