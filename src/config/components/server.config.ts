@@ -6,6 +6,7 @@ const envSchema = joi
     HOST: joi.string().default('localhost'),
     PORT: joi.number().default(3000),
     API_VERSION: joi.number().default(1),
+    ALLOWED_ORIGINS: joi.string().default('http://localhost:3000'),
   })
   .unknown()
   .required();
@@ -19,4 +20,5 @@ export const server: ServerConfig = {
   host: envVars.HOST,
   port: envVars.PORT,
   apiVersion: envVars.API_VERSION,
+  origins: envVars.ALLOWED_ORIGINS,
 };
