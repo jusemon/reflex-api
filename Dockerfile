@@ -1,16 +1,15 @@
-FROM node:18
-
-# Create app directory
-WORKDIR /usr/src/app
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Bundle app source
+#Build stage
+FROM node:18-alpine AS build
+WORKDIR /app
+COPY package*.json .
+RUN npm ci
 COPY . .
+RUN npm run build
 
-EXPOSE 80
-CMD [ "npm", "run", "start" ]
+#Prod stage
+FROM node:18-alpine AS production
+WORKDIR /app
+COPY package*.json .
+RUN npm ci --omit=dev
+COPY --from=build /app/dist ./dist
+CMD ["npm", "run", "start"]
